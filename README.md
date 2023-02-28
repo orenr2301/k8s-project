@@ -67,14 +67,17 @@ all:
 ```
 
 Apply ipv4 network routing capabilities and load on each host:
+
 ```
 sudo echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf && sysctl -p
 ```
 
 Change Addons values 
+
 ```
 vim inventory/dev-cluter/group_vars/k8s_cluster/addons.yml
 ```
+
 Get all lines approved make sure not missed anything you wanted to add: 
 
 ```
@@ -85,10 +88,10 @@ helm_enabled: true
 metrics_server_enabled: true
 ingress_publish_status_address: ""
 krew_root_dir: "/usr/local/krew"
-
 ```
 
 * Ingress -Controller is enabled by default to get install so make sure to put set false instead of true 
+
 ```
 ingress_nginx_enabled = flase
 ```
@@ -98,6 +101,7 @@ Modify the k8s-cluster-yaml Configurations under inventory/youprojectName/group_
 CNI, cluster name, pod and services subnets, and the container runtime manager, Arp strict in case of metallb, also apply multus as it better of with it and doesn’t bother the CNI itself
 
 For exmaple: 
+
 ```
 kube_version: v1.26.1
 kube_network_plugin: calico
@@ -105,7 +109,6 @@ container_manager: crio
 kube_proxy_strict_arp: true 
 kubeconfig_localhost: true
 cluster_name: cluster.local (can other name you want like home.local or cluster.home.net)
-
 ```
 
 # k8s Cluster Installtion 
@@ -116,21 +119,23 @@ If running on Ubuntu then do:
 **
 
 Lets check ping are successful from host/bastion server 
+
 ```
 ansible -i inventory/<yourProjectName>/hosts.yml all -m ping -b -u kubeadmin | grep SUCCESS
 ```
+
 If All is good then run the playbook ansible version must be running ansible between 2.11 to 2.13 versions 
 
 **
 Now Run The Installtion 
+
 ```
 ansible-playbook -i inventory/dev-cluter/hosts.yml cluster.yml -u kubeadmin -b
 ``
 
 **
 Installation runs between 20 to 30 minutes
-***
-
+**
 
 # Explore Environemt 
 
