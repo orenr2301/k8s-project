@@ -144,7 +144,7 @@ ansible-playbook -i inventory/dev-cluter/hosts.yml cluster.yml -u kubeadmin -b
 
 ### Explore Environemt 
 
-To Start Exploring Enviroment we need to load the k8s environment 
+To Start Exploring Enviroment we need to load the k8s environment to load it we need the kubeconfig file  
 This File is called the kubeconfig 
 and the kubespray matter it is creating an admin.conf file at the master node 
 
@@ -152,7 +152,41 @@ and the kubespray matter it is creating an admin.conf file at the master node
 **
 
 
+Checking Cluster Connectivity 
+
+1.	Copy the admin.conf file from master node into the bastion-server 
+admin.conf is at /etc/Kubernetes at master-node. 
+copy it to your bastion host home directory. 
+
+2.	At the bastion server you need to configure the admin conf to connect to the cluster via the master node which is the controlplaine when you are querying for pods, svc etc. 
+
+a. configure the /etc/hosts file and add a name to the master node for convenience
+ 
+b. Then edit admin conf file and adjust the url with the name: 
+ 
+c. Export the admin.conf as KUBECONFIG :
+```
+export KUBECONFIG=admin.conf 
+```
+
+d. now run the following command, and see that you are a running 3 nodes cluster at ready state: 
+```
+ kubectl get nodes  
+```
+![image](https://user-images.githubusercontent.com/117763723/221905880-2f0db023-8dab-48e7-98a9-bf3e7c86d910.png)
+
+
+e. Also Explore you initiative deployment configuration and also make sure pods are running
+Execute :
+``` 
+kubectl get pods -A
+```
+![image](https://user-images.githubusercontent.com/117763723/221908688-3dfe1181-d03a-4bd7-85fd-61847632c778.png)
+ 
+
 ### Nginx Ingress Controller Installtion 
+
+After We made Sure cluster is operational and up we need to install
 
 ### Metallb Installtion and Configuration 
 
