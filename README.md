@@ -182,11 +182,56 @@ Execute :
 kubectl get pods -A
 ```
 ![image](https://user-images.githubusercontent.com/117763723/221908688-3dfe1181-d03a-4bd7-85fd-61847632c778.png)
+
+On Basic Overall both commands to check the first state 
+
+![image](https://user-images.githubusercontent.com/117763723/221918161-fc492d8f-4bf0-4f20-895f-b14994b3c113.png)
+
  
 
 ### Nginx Ingress Controller Installtion 
 
-After We made Sure cluster is operational and up we need to install
+After We made Sure cluster is operational and up we need to install the Nginx-Ingress Controller 
+
+In Previous Section you Can see here that im not having an ingress or loadbalcancer to shift traffic inside the Kubernetes cluster.
+For that I will be using helm charts to deploy Ingress controller of type Nginx 
+
+```
+A Few word about ingress: 
+An Ingress in Kubernetes exposes HTTP and HTTPS routes from outside the cluster to services running within the cluster
+
+**Ingress Controller:**
+An Ingress controller is what fulfils the Ingress, usually with a load balancer. Below is an example on how an Ingress sends all the client traffic to a Service in Kubernetes Cluster:
+Helm Nginx Ingress Controller Deployment 
+```
+
+```
+1.	Make sure to have helm3 install on the bastion host and master node 
+
+2.	Download latest stable Release of Nginx Ingress Controller:
+    # controller_tag=$(curl -s https://api.github.com/repos/kubernetes/ingress-nginx/releases/latest | grep tag_name | cut -d '"' -f 4)
+    # wget https://github.com/kubernetes/ingress-nginx/archive/refs/tags/${controller_tag}.tar.gz
+
+3.	Extract The file Downloaded: 
+    # tar xvf ${controller_tag}.tar.gz
+
+4. Switch to Directory Created: 
+   # cd ingress-nginx-${controller_tag}
+
+5. Change your working directory to charts folder:
+   # cd charts/ingress-nginx/
+
+6. Create namespace
+   kubectl create namespace ingress-nginx
+
+7. Change values.yaml file to set number of replicas to the number of the node in the envrioments: 
+
+
+ # vim values.yaml 
+ # Change replicas from 1 pod to number of nodes in the case is 3: 
+```
+change here: At line  809
+
 
 ### Metallb Installtion and Configuration 
 
