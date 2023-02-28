@@ -10,17 +10,19 @@ Installation method: Kubespray
 
 <details><summary>VM's Details</summary>
 <p>
-#On bastion:
+  ```ruby 
+puts "
+  On bastion:
 update and upgrade 
 Installed Ansible 2.11+ and jinja2 version 2.11+ 
 made sure I’m able to ssh without password by copy the keys to the ansible hosts 
 hosts in etc/hosts are published in each node
 
-#On nodes: 
+On nodes: 
 update and upgrade 
 put user into sudoers
 made sure they are having internet connection 
-
+"
 </p>
 </details>
 
