@@ -139,6 +139,10 @@ ansible-playbook -i inventory/dev-cluter/hosts.yml cluster.yml -u kubeadmin -b
 
 # Explore Environemt 
 
+To Start Exploring Enviroment we need to load the k8s environment 
+
+Bet
+
 # Nginx Ingress Controller Installtion 
 
 # Metallb Installtion and Configuration 
