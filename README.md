@@ -27,7 +27,7 @@ made sure they are having internet connection
 </details>  
 
 
-# k8s Cluster Pre Installtion
+### k8s Cluster Pre Installtion
 <details><summary>SHOW</summary>
 <p>
 Make sure Bastion hosts files has a naming for everyone
@@ -96,7 +96,8 @@ Get all lines approved make sure not missed anything you wanted to add:
 
 ```
 cat inventory/dev-cluter/group_vars/k8s_cluster/addons.yml  | grep -v '#' | grep -v 'false' | awk NF
-
+```
+```
 dashboard_enabled: true
 helm_enabled: true
 metrics_server_enabled: true
@@ -126,7 +127,8 @@ cluster_name: cluster.local (can other name you want like home.local or cluster.
 ```
 </p>
 </details> 
-# k8s Cluster Installtion 
+
+### k8s Cluster Installtion 
 <details><summary>SHOW</summary>
 <p>
 
@@ -154,6 +156,7 @@ ansible-playbook -i inventory/dev-cluter/hosts.yml cluster.yml -u kubeadmin -b
 
 </p>
 </details> 
+
 ### Explore Environemt 
 <details><summary>SHOW</summary>
 <p>
@@ -202,7 +205,9 @@ On Basic Overall both commands to check the first state
 
  </p>
 </details> 
+
 ### Nginx Ingress Controller Installtion 
+
 <details><summary>SHOW</summary>
 <p>
 After We made Sure cluster is operational and up we need to install the Nginx-Ingress Controller 
@@ -270,7 +275,9 @@ In my Case 3 pods  are running as I specified (having 1 master and 2 workers) :
 ![image](https://user-images.githubusercontent.com/117763723/221920675-66b69a30-5ef9-43c6-962a-d5eac500b711.png)
 </p>
 </details> 
+
 ### Metallb Installtion and Configuration 
+
 <details><summary>SHOW</summary>
 <p>
 By Default The Above Helm Chart Executed comes with LoadBalancer Service type for the ingress-nginx-controller. I decied to stick with it and not using the nodePort Method 
@@ -372,6 +379,7 @@ All patched together and IPs have been assinged, we can now proceed to build and
 </details> 
 
 ### App Deployment 
+
 <details><summary>SHOW</summary>
 <p>
 1.	In order to have the app over k8s you need a docker image when deploying the pods.
@@ -477,7 +485,9 @@ The Service should be of type ClusterIP, dont forget i have an ingress which wil
 
 </p>
 </details>
+
 ### App Ingress Attachment  
+
 <details><summary>SHOW</summary>
 <p>
 For the Most cruical part, the ingress-nginx deployment
