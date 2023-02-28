@@ -90,7 +90,7 @@ ingress_publish_status_address: ""
 krew_root_dir: "/usr/local/krew"
 ```
 
-* Ingress -Controller is enabled by default to get install so make sure to put set false instead of true 
+**Ingress -Controller is enabled by default to get install so make sure to put set false instead of true **
 
 ```
 ingress_nginx_enabled = flase
@@ -113,10 +113,10 @@ cluster_name: cluster.local (can other name you want like home.local or cluster.
 
 # k8s Cluster Installtion 
 
-**
-Before Running the installation please make sure firewall or Iptables are not running on any host: 
-If running on Ubuntu then do: 
-**
+
+**Before Running the installation please make sure firewall or Iptables are not running on any host: 
+If running on Ubuntu then do: **
+
 
 Lets check ping are successful from host/bastion server 
 
@@ -126,16 +126,16 @@ ansible -i inventory/<yourProjectName>/hosts.yml all -m ping -b -u kubeadmin | g
 
 If All is good then run the playbook ansible version must be running ansible between 2.11 to 2.13 versions 
 
-**
-Now Run The Installtion 
+
+**Now Run The Installtion **
 
 ```
 ansible-playbook -i inventory/dev-cluter/hosts.yml cluster.yml -u kubeadmin -b
-``
+```
 
-**
-Installation runs between 20 to 30 minutes
-**
+
+**Installation runs between 20 to 30 minutes **
+
 
 # Explore Environemt 
 
