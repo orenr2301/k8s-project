@@ -7,8 +7,9 @@
 # Prequisistes
 </p>
 </details>
+```ruby
 Installtion method 
-
+```
 # k8s Cluster Pre Installtion
 
 # k8s Cluster Installtion 
