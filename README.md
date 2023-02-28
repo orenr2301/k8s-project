@@ -231,12 +231,271 @@ Helm Nginx Ingress Controller Deployment
  # Change replicas from 1 pod to number of nodes in the case is 3: 
 ```
 change here: At line  809
+![image](https://user-images.githubusercontent.com/117763723/221919530-1a3fb667-1090-4e42-97c4-21aaeaff89ed.png)
+And Here: At line 310
+![image](https://user-images.githubusercontent.com/117763723/221919581-5433431f-b3b5-4940-afc6-7b78631ca3c5.png)
 
+
+```
+8. Deploy the nginx-controller:
+    # helm install -n ingress-nginx ingress-nginx  -f values.yaml .
+```
+9. You should be getting the following output: 
+![image](https://user-images.githubusercontent.com/117763723/221920107-4aacd21d-5a23-42e8-a6c6-3d7ce8305aab.png)
+
+10 .Check al ingress-nginx namespace resource
+```
+kubectl get all -n ingress-nginx 
+```
+
+11. Make sure all ingress-controller pods are running
+```
+kubectl get pod -n ingress-nginx 
+```
+In my Case 3 pods  are running as I specified (having 1 master and 2 workers) : 
+![image](https://user-images.githubusercontent.com/117763723/221920675-66b69a30-5ef9-43c6-962a-d5eac500b711.png)
 
 ### Metallb Installtion and Configuration 
 
+By Default The Above Helm Chart Executed comes with LoadBalancer Service type for the ingress-nginx-controller. I decied to stick with it and not using the nodePort Method 
+There fore i will be needed an upper level plugin for that service. 
+Therefor  i will be using the metallb plugin to have that loadbalancer we need.
+
+```
+1.	Install metallb 
+a. Get the latest MetalLB release tag:
+ #   MetalLB_RTAG=$(curl -s https://api.github.com/repos/metallb/metallb/releases/latest|grep tag_name|cut -d '"' -f 4|sed 's/v//')
+# echo $MetalLB_RTAG
+
+b . create a directory for metallb 
+   # mkdir metallb
+   # cd metallb 
+
+c. download the installation manifest: 
+# wget \  https://raw.githubusercontent.com/metallb/metallb/v$MetalLB_RTAG/config/manifests/metallb-native.yaml
+
+d. install it over the k8s cluster 
+  #   kubectl apply -f metallb-native.yaml
+
+You should  be be getting the following output : 
+**namespace/metallb-system created
+customresourcedefinition.apiextensions.k8s.io/addresspools.metallb.io created
+customresourcedefinition.apiextensions.k8s.io/bfdprofiles.metallb.io created
+customresourcedefinition.apiextensions.k8s.io/bgpadvertisements.metallb.io created
+customresourcedefinition.apiextensions.k8s.io/bgppeers.metallb.io created
+customresourcedefinition.apiextensions.k8s.io/communities.metallb.io created
+customresourcedefinition.apiextensions.k8s.io/ipaddresspools.metallb.io created
+customresourcedefinition.apiextensions.k8s.io/l2advertisements.metallb.io created
+serviceaccount/controller created
+serviceaccount/speaker created
+role.rbac.authorization.k8s.io/controller created
+role.rbac.authorization.k8s.io/pod-lister created
+clusterrole.rbac.authorization.k8s.io/metallb-system:controller created
+clusterrole.rbac.authorization.k8s.io/metallb-system:speaker created
+rolebinding.rbac.authorization.k8s.io/controller created
+rolebinding.rbac.authorization.k8s.io/pod-lister created
+clusterrolebinding.rbac.authorization.k8s.io/metallb-system:controller created
+clusterrolebinding.rbac.authorization.k8s.io/metallb-system:speaker created
+secret/webhook-server-cert created
+service/webhook-service created
+deployment.apps/controller created
+daemonset.apps/speaker created
+validatingwebhookconfiguration.admissionregistration.k8s.io/metallb-webhook-configuration created**
+
+2.	Check and list running pods 
+root@bastion-dev:/home/kubeadmin/manifests# kubectl get pods -n metallb-system
+NAME                          READY   STATUS    RESTARTS   AGE
+controller-68bf958bf9-gbt2d   1/1     Running   0          77m
+speaker-bgtdh                 1/1     Running   0          77m
+speaker-gcsml                 1/1     Running   0          77m
+speaker-jtwqf                 1/1     Running   0          77m
+```
+Now Create the LoadBalancer Service Pool of ip Address
+
+```
+vim/nano ip_pooladdresses.yaml
+
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: production
+   namespace: metallb-system
+spec:
+  addresses:
+   - 192.168.1.52-192.168.1.55
+- - -
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: l2-advert
+  namespace: metallb-system
+``` 
+Now it will allocates any ip from that pool, since only my workers IP's are in there it will allocates 192.168.1.52 and 192.168.1.53
+
+Apply ip-pool object 
+
+```
+kubectl create -f  ipaddress_pools.yaml
+```
+
+All is left is to connect the Ingress-controller to metallb since the ingress-controller's service is LoadBlancer type
+
+```
+1. I Patched the Ingress to the loadBalancer just to make sure it is in the correct service 
+  # kubectl -n ingress-nginx patch svc ingress-nginx-controller --type='json' -p '[{"op":"replace","path":"/spec/type","value":"LoadBalancer"}]'
+
+got the following output: 
+service/ingress-nginx-controller patched (no change) 
+
+```
+**service was already on LoadBlancer Type 
+I wasn’t deployed ingress-nginx-controller with nodeport service type**
+
+All patched together and IPs have been assinged, we can now proceed to build and deploy our app 
+
 ### App Deployment 
 
+1.	In order to have the app over k8s you need a docker image when deploying the pods.
+    When deploying pods with containers in it they will need an image which holds your app. 
+
+    For this to happen you will have to create a dockerfile and from it to build the the image
+
+
+1. create a directory, which in this diractory you will store all the application filesystem and code. 
+2. cd to that Directory after done with building the code and app FS, and in that directore create a Dockerfile to hold up your application to an image
+** Of Course make sure you have docker-ce installed on your host**
+
+3. Execute the following: 
+
+```
+"docker build  <registry-user-name>/<name-of-repository>:<tag> ." (don’t forget the dot)
+```
+
+For example in my case:
+
+```
+ docker build orenrahav/flask-app:test-v1 .
+```
+
+Then Push it to your registry - make sure you are logged in before doing this 
+
+```
+docker push <image-name>:<tage>  == docker push <registry-user-name>/<name-of-repository>:<tag>
+```
+In this case i was able to jump over the image tagging stage
+
+My Docker registry image wich i pushed 
+![image](https://user-images.githubusercontent.com/117763723/221927565-0a13f64e-abd2-4ce2-b4f3-38d55869a1f8.png)
+
+Now We can deploy our app, i decided to deploy it all over the node workes and masters
+
+Beware that in here i have deployed the pods services and ingress in a namespace called **tbd** i wanted to todo it as **TBD**, but k8s doesnt except UPPER case
+due to one of their RFC's
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+  namespace: tbd
+spec:
+   replicas: 3
+   selector:
+      matchLabels:
+        app: flask
+        dev: test
+   template:
+     metadata:
+       labels:
+         app: flask
+         dev: test
+     spec:
+       containers:
+       - name: flask-cont
+         image: orenrahav/flask-app:test-v1
+         ports:
+         - containerPort: 8080
+```
+
+![image](https://user-images.githubusercontent.com/117763723/221928916-e7859c96-b700-45a6-a46c-931acc002eb4.png)
+
+I have told in the end since my app in the end using port 8080 i was telling container inside the pod to communicate over port 8080
 ### App Service Attachment 
 
+Now we need to expose out pods to the cluster network 
+Therfore we will assign as service to those pods: 
+
+They way it is assigning them its by labels - look at previous section at the deployment file, and see the labels i have attached to the pods
+app=flask and dev=test
+
+Below the service yaml file for it
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+   name: flask-service
+   namespace: tbd
+spec:
+   selector:
+     app: flask
+     dev: test
+   ports:
+   - protocol: TCP
+     port: 8080
+     targetPort: 8080
+   type: ClusterIP
+```
+
+The Service should be of type ClusterIP, dont forget i have an ingress which will get the request for the app and communicate it back to the service and from service to pods. 
+
+
 ### App Ingress Attachment  
+
+For the Most cruical part, the ingress-nginx deployment
+
+For us to get to the app which relies inside the pods we need an ingress to catch out requeste/traffic and deliver it inside to the cluster from outside the cluster
+I will assing the ingress backend to the pods service whci i have assigned previously and also give it a host/domain to direct my reuqest
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flask-ingress
+  namespace: tbd
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: flask-demo.apps.cluster.local
+    http:
+     paths:
+     - path: /
+       pathType: Prefix
+       backend:
+        service:
+          name: flask-service
+          port:
+           number: 8080
+```
+
+In this exmaple i have told ingress to take request over http(port 80)
+In order for me to do this i cannot just get in, i will need to use the host name i provided to the app which the ingress will expect to get the request from. 
+
+The URL i will put in the browser will be: 
+```
+flask-demo.apps.cluster.local
+```
+
+Since im not having a core network or external IP to translate my request, i will use my local computer dns and edit the host file to be: 
+
+```
+ 192.168.1.52 flask-demo.apps.cluster.local 
+ 192.168.1.53 flask-demo.apps.cluster.local
+```
+I can do only once since my ingress can get request from both ends
+
+Now putting the URL in my brower (i have used chrome in icgonito for not store cache) got me the expected result and im able to get into my app from outside the cluster!
+
+![image](https://user-images.githubusercontent.com/117763723/221932769-e71626c1-f92f-4ed5-943c-b93222483031.png)
+
+
