@@ -25,7 +25,9 @@ put user into sudoers
 made sure they are having internet connection 
 </p>
 </details>  
-### k8s Cluster Pre Installtion
+
+
+# k8s Cluster Pre Installtion
 <details><summary>SHOW</summary>
 <p>
 Make sure Bastion hosts files has a naming for everyone
@@ -124,7 +126,7 @@ cluster_name: cluster.local (can other name you want like home.local or cluster.
 ```
 </p>
 </details> 
-### k8s Cluster Installtion 
+# k8s Cluster Installtion 
 <details><summary>SHOW</summary>
 <p>
 
@@ -370,7 +372,8 @@ All patched together and IPs have been assinged, we can now proceed to build and
 </details> 
 
 ### App Deployment 
-
+<details><summary>SHOW</summary>
+<p>
 1.	In order to have the app over k8s you need a docker image when deploying the pods.
     When deploying pods with containers in it they will need an image which holds your app. 
 
@@ -437,8 +440,11 @@ spec:
 
 I have told in the end since my app in the end using port 8080 i was telling container inside the pod to communicate over port 8080
 
+</p>
+</details> 
 
 ### App Service Attachment 
+
 <details><summary>SHOW</summary>
 <p>
 
