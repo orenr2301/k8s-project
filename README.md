@@ -2,7 +2,12 @@
 
 # Author : Oren Rhav 
 
+<details><summary>CLICK ME</summary>
+<p>
 # Prequisistes
+</p>
+</details>
+Installtion method 
 
 # k8s Cluster Pre Installtion
 
