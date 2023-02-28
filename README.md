@@ -31,7 +31,7 @@ look at below image for expeted output :
 ![image](https://user-images.githubusercontent.com/117763723/221852389-b4748696-f106-4cee-9e69-ce8c284b9edb.png)
 
 Inverntory should look like this: 
-'''
+```
 all:
   hosts:
     master-dev-1:
@@ -64,7 +64,7 @@ all:
         kube_node:
     calico_rr:
       hosts: {}
-'''
+```
 
 # k8s Cluster Installtion 
 
