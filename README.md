@@ -1,8 +1,8 @@
 # K8s Home Project 
 
-# Author : Oren Rhav 
+## Author : Oren Rhav 
 
-# Prequisistes
+### Prequisistes
 
 Installation method: Kubespray 
 3 nodes cluster 
@@ -19,7 +19,12 @@ update and upgrade
 put user into sudoers
 made sure they are having internet connection 
   
-# k8s Cluster Pre Installtion
+### k8s Cluster Pre Installtion
+
+Make sure Bastion hosts files has a naming for everyone
+
+![image](https://user-images.githubusercontent.com/117763723/221857982-a233f129-bde4-4363-8ba7-97bba4e8edf4.png)
+
 
 Git clone the kubespray github project.
 
@@ -111,7 +116,7 @@ kubeconfig_localhost: true
 cluster_name: cluster.local (can other name you want like home.local or cluster.home.net)
 ```
 
-# k8s Cluster Installtion 
+### k8s Cluster Installtion 
 
 
 **Before Running the installation please make sure firewall or Iptables are not running on any host: 
@@ -137,18 +142,22 @@ ansible-playbook -i inventory/dev-cluter/hosts.yml cluster.yml -u kubeadmin -b
 **Installation runs between 20 to 30 minutes **
 
 
-# Explore Environemt 
+### Explore Environemt 
 
 To Start Exploring Enviroment we need to load the k8s environment 
+This File is called the kubeconfig 
+and the kubespray matter it is creating an admin.conf file at the master node 
 
-Bet
+**At the bastion server you need to configure the admin conf to connect to the cluster via the master node which is the controlplaine when you are querying for pods, svc etc. 
+**
 
-# Nginx Ingress Controller Installtion 
 
-# Metallb Installtion and Configuration 
+### Nginx Ingress Controller Installtion 
 
-# App Deployment 
+### Metallb Installtion and Configuration 
 
-# App Service Attachment 
+### App Deployment 
 
-# App Ingress Attachment  
+### App Service Attachment 
+
+### App Ingress Attachment  
